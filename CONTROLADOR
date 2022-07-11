@@ -1,0 +1,206 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package controladores;
+
+import beans.DocumentoSimple;
+import dao.DAODocumentoSimpleN;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ *
+ * @author PILAR
+ */
+public class SBuscarDocumentoSimpleJ extends HttpServlet {
+
+    /**
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        try {
+            /* TODO output your page here. You may use following sample code. */
+           
+            System.out.println("YA LLEGOOOOOO!!!!!!!!"); 
+          String idtipodonotarial = request.getParameter("IdTipoDocNotarial");//puede ser todos
+          String idnotselecc = request.getParameter("IdNotSelecc");
+          String opidnotselecc = request.getParameter("OpIdNotSelecc");
+          String cadtotperbusq = request.getParameter("cadenaTotalP");            
+          System.out.println("valor--->"+cadtotperbusq); 
+          String idfinicial = request.getParameter("IdFInicial");
+          System.out.println("fecha inicial--->"+idfinicial); 
+          String idffinal = request.getParameter("IdFFinal");
+          String idfunica = request.getParameter("IdFUnica");
+          System.out.println("fecha unica--->"+idfunica); 
+          ArrayList listadocumentosnbusq=new ArrayList();               
+          //ArrayList listapersonasndocs=new ArrayList();               
+          DAODocumentoSimpleN aONDocumentoSimpleN = new DAODocumentoSimpleN();
+          
+          listadocumentosnbusq=aONDocumentoSimpleN.listaDocumentosSimplesJ(idtipodonotarial, idnotselecc,opidnotselecc,cadtotperbusq,idfinicial,idffinal,idfunica);
+            
+          int mitadds=(listadocumentosnbusq.size())/2;
+          ArrayList listadocumentosnbusqA=new ArrayList();               
+          ArrayList listadocumentosnbusqB=new ArrayList();    
+          
+          for(int y=0;y<mitadds;y++)
+          {
+           listadocumentosnbusqA.add(listadocumentosnbusq.get(y));
+          }
+          
+          for(int y=mitadds;y<listadocumentosnbusq.size();y++)
+          {
+           listadocumentosnbusqB.add(listadocumentosnbusq.get(y));
+          }
+           
+          System.out.println("el tamaño de la lista de personas = "+listadocumentosnbusqB.size());
+          
+          ArrayList listaunilocalcorresp=new ArrayList();               
+          ArrayList listarepositocorresp=new ArrayList(); 
+          ArrayList listaarchivocorrespo=new ArrayList();   
+          listaunilocalcorresp=aONDocumentoSimpleN.listaUnidadesLDocSimple(listadocumentosnbusq);
+          listarepositocorresp=aONDocumentoSimpleN.listaRepositoriosDocSimple(listadocumentosnbusq);        
+          listaarchivocorrespo=aONDocumentoSimpleN.listaArchivosDocSimple(listadocumentosnbusq);
+          
+          
+            out.println("<table id='grids' data-role='grid' role='grid' style='height: auto;' >");                
+            out.println("<colgroup>"); 
+            out.println("<col style='width:13px;'>");    
+            out.println("<col style='width:85px;'>");    
+            out.println("<col style='width:148px;'>");    
+            out.println("<col style='width:155px;'>");
+            out.println("<col style='width: 70px;'>"); 
+            out.println("<col style='width: 100px;'>"); 
+            out.println("<col style='width:100px;'>");  
+            out.println("<col style='width: 50px;'>");
+            out.println("</colgroup>"); 
+            out.println("<tbody id='elbodygrids' >");
+            int cont=0;
+            int numF=0;
+            int numclas=1;
+            int conttd;
+            String laclase="";
+            
+            for (Iterator it = listadocumentosnbusqA.iterator(); it.hasNext();) {
+             System.out.println("el tamaño lista de documentos = "+listadocumentosnbusq.size());
+                
+                if(numclas==1)
+                {laclase="k-alt";}
+                else
+                {
+                if((numclas%2)==0)
+                {laclase="";}
+                else
+                {laclase="k-alt";}
+                }
+                String latablaes="grids-";            
+                out.println("<tr  id='"+cont+"'   class='"+laclase+"' role='row' onclick='' >");
+
+                
+                DocumentoSimple dcsito = (DocumentoSimple) it.next();
+              //  PersonaNaturalInterviniente personita=(PersonaNaturalInterviniente) it.next();
+                
+             cont=cont+1;
+             numclas=numclas+1;
+             conttd=cont-1;
+             out.println ("<td id='"+latablaes+conttd+"' onclick='descripcionDocumS(id)' title='Ver la descripción del documento simple'>"+cont+"</td>");
+
+             out.println ("<td id='"+latablaes+conttd+"' onclick='descripcionDocumS(id)' title='Ver la descripción del documento simple'>"+dcsito.getCodigoReferencia()+"-"+dcsito.getDocumentoSimpleId()+"</td>");             
+             out.println ("<td id='"+latablaes+conttd+"' onclick='descripcionDocumS(id)' title='Ver la descripción del documento simple'>"+dcsito.getTitulo()+"</td>");             
+             out.println ("<td id='"+latablaes+conttd+"' onclick='descripcionDocumS(id)' title='Ver la descripción del documento simple'>"+"° "+String.valueOf(listadocumentosnbusqB.get(numF))+"</td>");             
+             out.println ("<td id='"+latablaes+conttd+"' onclick='descripcionDocumS(id)' title='Ver la descripción del documento simple'>"+dcsito.getFechaFinal()+"</td>");             
+             out.println ("<td id='"+latablaes+conttd+"' onclick='descripcionDocumS(id)' title='Ver la descripción del documento simple'>"+String.valueOf(listaarchivocorrespo.get(numF))+"</td>");  
+             out.println ("<td id='"+latablaes+conttd+"' onclick='descripcionDocumS(id)' title='Ver la descripción del documento simple'>"+String.valueOf(listarepositocorresp.get(numF))+" , unidad de Localización "+String.valueOf(listaunilocalcorresp.get(numF))+" y legajo "+String.valueOf(listaunilocalcorresp.get(numF+mitadds))+"</td>");  
+             
+             int mcont=cont-1;
+             String columImag="c7-"+String.valueOf(mcont);
+             String paraver="";
+             String mover="";
+             String mout="";
+             if(dcsito.getEstadoDigitalizacion()=='S')//cambiar a S
+             {
+             mover="cambiar_color_over_limg(this);";
+             mout="cambiar_color_out_limg(this);";
+             paraver="Ver Imágenes";
+             }
+             else
+             {
+             mover="";
+             mout="";
+             }
+             
+             out.println ("<td id='"+latablaes+conttd+"'  onclick='imagenesDocumS(id)'   onmouseover='"+mover+"'  onmouseout='"+mout+"'  style='color: slateblue; text-align: justify; text-decoration: none' >"+paraver+"</td>");             
+             
+             
+             
+             out.println("</tr>");
+             numF=numF+1;
+            }
+          
+            out.println("</tbody>");
+            out.println("</table>");
+            
+            
+            
+        } finally {            
+            out.close();
+        }
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP
+     * <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP
+     * <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+}
